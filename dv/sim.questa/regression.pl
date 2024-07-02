@@ -2,8 +2,8 @@
 
 ###################################################
 # Author : Chris Le
-# Email  : lehoangcuong1990@gmail.com
-# Date   : July 08, 2018
+# Email  :
+# Date   :
 ###################################################
 
 use strict;
@@ -20,7 +20,7 @@ my $simulateFlag  = 0;
 my $coverageFlag = 0;
 my $option = "";
 
-GetOptions (                                                                                                                          
+GetOptions (
   "-option=s"   => \$option,
   "-compile"    => \$compileFlag,
   "-simulate"   => \$simulateFlag,
@@ -28,7 +28,7 @@ GetOptions (
   "-h"          => \$helpFlag,
 );
 
-if(@ARGV != 1 || $helpFlag) {                                                                                                                     
+if(@ARGV != 1 || $helpFlag) {
   print_error_message();
 }
 
@@ -38,6 +38,11 @@ my $iFile = $ARGV[0];
 my @tests = ();
 my @pass_tests = ();
 my @fail_tests = ();
+
+if($coverageFlag) {
+    coverage_test();
+    exit;
+}
 
 open(FILE, "<", $iFile) or die $!;
 foreach my $line (shuffle <FILE>) {
@@ -66,9 +71,6 @@ foreach my $test (@tests) {
     simulate_test($test);
   }
 }
-if($coverageFlag) {
-  coverage_test();
-}
 if($simulateFlag) {
   report_test();
 }
@@ -83,9 +85,9 @@ sub compile_test {
   mkpath($dir) unless (-d $dir);
   chdir($dir);
   system("ln -s $pwd/Makefile") unless (-f "Makefile");
-  system("make ALU_HOME=$pwd/../.. OPT=\"$option\" compile | tee run.log");
+  system("make ALU_HOME=$pwd/../.. OPT=\"$option\" compile opt | tee run.log");
   chdir($pwd);
-}              
+}
 
 #******************************************************************
 # simulate_test() - routine to simulate the test
@@ -99,52 +101,22 @@ sub simulate_test {
   mkpath($simdir) unless (-d $simdir);
   mkpath($covdir) unless (-d $covdir);
   chdir($simdir);
-  system("ln -s ../simv") unless (-f "simv");
-  system("ln -s ../simv.daidir") unless (-d "simv.daidir");
+  system("ln -s ../work") unless (-f "work");
   system("ln -s ../Makefile") unless (-f "Makefile");
-  system("make ALU_HOME=$pwd/../.. TEST=$test SEED=$seed OPT=\"$option\" simulate");
+  system("make TEST=$test SEED=$seed OPT=\"$option\" simulate");
   if(open(FILE, "<", "simulate.log")) {
     my $f = do {local $/;<FILE>};
     $pass = ($f =~ /UVM_ERROR\s*:\s*0\s*.*UVM_FATAL\s*:\s*0\s*/);
     close(FILE);
-  } 
+  }
   if($pass) {
     push @pass_tests, "${test}_${seed}";
-    system("cp -rf simv.vdb $covdir\/${test}_${seed}.vdb");
+    system("ln -s ../${test}_${seed}/simv.ucdb $covdir\/${test}_${seed}.ucdb");
   } else {
     push @fail_tests, "${test}_${seed}";
   }
   chdir($pwd);
-}              
-
-
-#******************************************************************
-# execute_test() - routine to execute the test
-#******************************************************************
-sub execute_test {
-  my ($test) = @_;
-  my $pass = 0;
-  my $seed = sprintf("%05d", int(rand(100000)));
-  my $simdir = "${regdir}/${test}_${seed}";
-  my $covdir = "${regdir}/coverage";
-  mkpath($simdir) unless (-d $simdir);
-  mkpath($covdir) unless (-d $covdir);
-  chdir($simdir);
-  system("ln -s $pwd/Makefile") unless (-f "Makefile");
-  system("make ALU_HOME=$pwd/../.. TEST=$test SEED=$seed OPT=\"$option\" | tee run.log");
-  if(open(FILE, "<", "run.log")) {
-    my $f = do {local $/;<FILE>};
-    $pass = ($f =~ /UVM_ERROR\s*:\s*0\s*.*UVM_FATAL\s*:\s*0\s*/);
-    close(FILE);
-  } 
-  if($pass) {
-    push @pass_tests, "${test}_${seed}";
-    system("cp -rf simv.vdb $covdir\/${test}_${seed}.vdb");
-  } else {
-    push @fail_tests, "${test}_${seed}";
-  }
-  chdir($pwd);
-}              
+}
 
 
 #******************************************************************
@@ -153,9 +125,11 @@ sub execute_test {
 sub coverage_test {
   my $dir = "$regdir/coverage";
   if(-d $dir) {
-    system("make COV_DB=\"$regdir\/coverage\/\*.vdb\" OPT=\"$option\" coverage");
+    my @db_list = glob( $dir . '/*' );
+    system("vcover merge simv.ucdb @db_list");
+    system("make coverage");
   }
-}              
+}
 
 
 #******************************************************************
@@ -177,7 +151,7 @@ sub report_test {
   close(FILE);
   print "\n";
   system("cat regression.log");
-}              
+}
 
 #******************************************************************
 # print_error_message() - routine to print error message
@@ -189,5 +163,5 @@ sub print_error_message {
   print "       -simulate         : simulate the regression only\n";
   print "       -coverage         : generate coverage report\n";
   print "       -h                : print help message\n";
-  exit 0;           
-}              
+  exit 0;
+}
