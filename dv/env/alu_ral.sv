@@ -9,7 +9,7 @@
 class alu_reg1 extends uvm_reg;
   `uvm_object_utils(alu_reg1)
   rand uvm_reg_field field;
-  function new(name = "alu_reg1");
+  function new(string name = "alu_reg1");
     super.new(name, 32, build_coverage(UVM_NO_COVERAGE));
   endfunction : new
 
@@ -26,7 +26,7 @@ class alu_reg2 extends uvm_reg;
   constraint c_field1 {
     field1.value inside {1, 2, 3, 4, 5, 6};
   }
-  function new(name = "alu_reg2");
+  function new(string name = "alu_reg2");
     super.new(name, 32, build_coverage(UVM_NO_COVERAGE));
   endfunction : new
 
@@ -42,7 +42,7 @@ class alu_reg3 extends uvm_reg;
   `uvm_object_utils(alu_reg3)
   rand uvm_reg_field field1;
   rand uvm_reg_field field2;
-  function new(name = "alu_reg3");
+  function new(string name = "alu_reg3");
     super.new(name, 32, build_coverage(UVM_NO_COVERAGE));
   endfunction : new
 
@@ -57,7 +57,7 @@ endclass : alu_reg3
 class alu_reg4 extends uvm_reg;
   `uvm_object_utils(alu_reg4)
   rand uvm_reg_field field;
-  function new(name = "alu_reg4");
+  function new(string name = "alu_reg4");
     super.new(name, 32, build_coverage(UVM_NO_COVERAGE));
   endfunction : new
 
@@ -76,7 +76,7 @@ class alu_ral extends uvm_reg_block;
   rand alu_reg4 reg4;
   uvm_reg_map map;
 
-  function new(name = "alu_ral");
+  function new(string name = "alu_ral");
     super.new(name, build_coverage(UVM_NO_COVERAGE));
   endfunction : new
 

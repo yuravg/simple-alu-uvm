@@ -8,6 +8,7 @@
 `define _ALU_TEST_PKG_
 package alu_test_pkg;
   import uvm_pkg::*;
+  `include "uvm_macros.svh"
   import alu_env_pkg::*;
   import alu_seq_pkg::*;
   `include "alu_test.sv"

@@ -8,6 +8,7 @@
 `define _ALU_SEQ_PKG_
 package alu_seq_pkg;
   import uvm_pkg::*;
+  `include "uvm_macros.svh"
   import alu_env_pkg::*;
   `include "alu_seq_cfg.sv"
   `include "alu_seq.sv"

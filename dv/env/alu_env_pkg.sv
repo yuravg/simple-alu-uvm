@@ -8,6 +8,7 @@
 `define _ALU_ENV_PKG_
 package alu_env_pkg;
   import uvm_pkg::*;
+  `include "uvm_macros.svh"
   import apb_agent_pkg::*;
   `include "alu_trans.sv"
   `include "alu_seqr.sv"

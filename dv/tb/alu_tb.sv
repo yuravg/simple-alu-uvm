@@ -6,6 +6,7 @@
  
 module alu_tb;
   import uvm_pkg::*;
+  import alu_test_pkg::*;
 
   logic clk;
   logic reset_n;
