@@ -43,7 +43,7 @@ This is a full tutorial to verify simple ALU design using UVM (Univeral Verifica
 
 
 ## 3. How to run:
-- Go to dir: `cd dv/sim`
+- Go to dir: `cd dv/sim` (or `cd dv/sim.questa` for QuestaSim)
 - Compile: `make compile`
 - Simulate: `make simulation TEST=test_to_run SEED=optional`
 - Open waveform: `make waveform`
@@ -55,7 +55,7 @@ Change *PLI_PATH* in Makefile depending on your environment for generating Verdi
 
 
 ## 4. Regression:
-- Go to: `cd dv/sim`
+- Go to: `cd dv/sim`  (or `cd dv/sim.questa` for QuestaSim)
 - Execute: `perl regression.pl [-options] regression.f`
 
 ### 4.1. Input format:
